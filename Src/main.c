@@ -342,22 +342,33 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 /* -------------------------------------------------------------------------------- */
 void pset(UG_S16 x, UG_S16 y, UG_COLOR col)
 {
-	BSP_LCD_DrawPixel( (uint16_t)x, (uint16_t)y, (0xFF000000 | (uint32_t)col) );
+	if( (x < BSP_LCD_GetXSize()) && (y < BSP_LCD_GetYSize()) )
+		BSP_LCD_DrawPixel(x, y, (0xFF000000 | col) );
 }
 
 /* Hardware accelerator */
 UG_RESULT _HW_DrawLine(UG_S16 x1, UG_S16 y1, UG_S16 x2, UG_S16 y2, UG_COLOR c)
 {
-	BSP_LCD_SetTextColor( 0xFF000000 | c );
-	BSP_LCD_DrawLine(x1, y1, x2, y2);
-	return UG_RESULT_OK;
+	if( (x1 < BSP_LCD_GetXSize()) && (x2 < BSP_LCD_GetXSize()) && (y1 < BSP_LCD_GetYSize()) && (y2 < BSP_LCD_GetYSize()) )
+    {
+        BSP_LCD_SetTextColor( 0xFF000000 | c );
+        BSP_LCD_DrawLine(x1, y1, x2, y2);
+        return UG_RESULT_OK;
+    }
+    else
+        return UG_RESULT_FAIL;
 }
 
 UG_RESULT _HW_FillFrame(UG_S16 x1, UG_S16 y1, UG_S16 x2, UG_S16 y2, UG_COLOR c)
 {
-	BSP_LCD_SetTextColor( 0xFF000000 | c );
-	BSP_LCD_FillRect(x1, y1, (x1>=x2)?(x1-x2):(x2-x1), (y1>=y2)?(y1-y2):(y2-y1));
-	return UG_RESULT_OK;
+	if( (x1 < BSP_LCD_GetXSize()) && (x2 < BSP_LCD_GetXSize()) && (y1 < BSP_LCD_GetYSize()) && (y2 < BSP_LCD_GetYSize()) )
+    {
+        BSP_LCD_SetTextColor( 0xFF000000 | c );
+        BSP_LCD_FillRect((x1<x2)?x1:x2, (y1<y2)?y1:y2, (x1>x2)?(x1-x2+1):(x2-x1+1), (y1>y2)?(y1-y2+1):(y2-y1+1));
+        return UG_RESULT_OK;
+    }
+    else
+        return UG_RESULT_FAIL;
 }
 
 /**
